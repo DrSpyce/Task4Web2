@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/task4web2dbserver/databases/Task4Web2_db",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:Task4Web2ContextConnection",
+      "dynamicId": null
+    }
+  }
+}

@@ -52,7 +52,6 @@ namespace Task4Web2.Pages
                 {
                     await _signInManager.SignOutAsync();
                     await _userManager.DeleteAsync(user);
-                    return RedirectToPage();
                 }    
                 if (user != null)
                 {
@@ -70,23 +69,25 @@ namespace Task4Web2.Pages
             foreach (var userId in AreChecked)
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user.Email == User.Identity.Name)
-                {
-                    await _signInManager.SignOutAsync();
-                    await _userManager.SetLockoutEnabledAsync(user, true);
-                    await _userManager.SetLockoutEndDateAsync(user, EndDate);
-                    user.Status = "Blocked";
-                    await _userManager.UpdateAsync(user);
-                    return RedirectToPage();
-                }
-                if (user != null)
-                {
-                    await _userManager.SetLockoutEnabledAsync(user, true);
-                    await _userManager.SetLockoutEndDateAsync(user, EndDate);
-                    await _userManager.UpdateSecurityStampAsync(user);
-                    user.Status = "Blocked";
-                    await _userManager.UpdateAsync(user);
-                    i++;
+                if(user.Status == "Active")
+				{
+                    if (user.Email == User.Identity.Name)
+                    {
+                        await _signInManager.SignOutAsync();
+                        await _userManager.SetLockoutEnabledAsync(user, true);
+                        await _userManager.SetLockoutEndDateAsync(user, EndDate);
+                        user.Status = "Blocked";
+                        await _userManager.UpdateAsync(user);
+                    }
+                    if (user != null)
+                    {
+                        await _userManager.SetLockoutEnabledAsync(user, true);
+                        await _userManager.SetLockoutEndDateAsync(user, EndDate);
+                        await _userManager.UpdateSecurityStampAsync(user);
+                        user.Status = "Blocked";
+                        await _userManager.UpdateAsync(user);
+                        i++;
+                    }
                 }
             }
             Message += $"{i} users were blocked";
@@ -99,14 +100,18 @@ namespace Task4Web2.Pages
             foreach (var userId in AreChecked)
             {
                 var user = await _userManager.FindByIdAsync(userId);
+                
                 if (user != null)
                 {
-                    await _userManager.SetLockoutEnabledAsync(user, false);
-                    await _userManager.SetLockoutEndDateAsync(user, DateTime.Now - TimeSpan.FromMinutes(1));
-                    await _userManager.UpdateSecurityStampAsync(user);
-                    user.Status = "Active";
-                    await _userManager.UpdateAsync(user);
-                    i++;
+                    if(user.Status == "Blocked")
+                    {
+                        await _userManager.SetLockoutEnabledAsync(user, false);
+                        await _userManager.SetLockoutEndDateAsync(user, DateTime.Now - TimeSpan.FromMinutes(1));
+                        await _userManager.UpdateSecurityStampAsync(user);
+                        user.Status = "Active";
+                        await _userManager.UpdateAsync(user);
+                        i++;
+                    }
                 }
             }
             Message += $"{i} users were unblocked";
